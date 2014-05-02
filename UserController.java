@@ -96,20 +96,21 @@ public class UserController {
     
     public static boolean listSearch(String type, String searchFor){
     	Object listItem;
+    	String tempStr = null;
     	LinkedList<Object> searchList = theData;
 
     	for(int i = 0 ; i < searchList.size(); i++){
-    		listItem = searchList.peek();
+    		listItem = searchList.get(i);
     		if(type.equalsIgnoreCase("user")){
-    			type = ((User)listItem).getEmail();
+    			tempStr = ((User)listItem).getEmail();
     		}else if (type.equalsIgnoreCase("patient")){
-    			type = ((Patient)listItem).getEmail();
+    			tempStr = ((Patient)listItem).getEmail();
     		}else if (type.equalsIgnoreCase("healthLog")){
-    			type = ((HealthLog)listItem).getDate();
+    			tempStr = ((HealthLog)listItem).getDate();
     		}else if (type.equalsIgnoreCase("workout")){
-    			type = ((Workout)listItem).getName();
+    			tempStr = ((Workout)listItem).getName();
     		}
-    		if(searchFor.equalsIgnoreCase(type))
+    		if(searchFor.equalsIgnoreCase(tempStr))
     				return true;
     	}
     	return false;
@@ -117,23 +118,49 @@ public class UserController {
     
     public static Object search(String type, String searchFor){
     	Object listItem;
+    	String tempStr = null;
     	LinkedList<Object> searchList = theData;
 
     	for(int i = 0 ; i < searchList.size(); i++){
-    		listItem = searchList.peek();
+    		listItem = searchList.get(i);
     		if(type.equalsIgnoreCase("user")){
-    			type = ((User)listItem).getEmail();
+    			tempStr = ((User)listItem).getEmail();
     		}else if (type.equalsIgnoreCase("patient")){
-    			type = ((Patient)listItem).getEmail();
+    			tempStr = ((Patient)listItem).getEmail();
     		}else if (type.equalsIgnoreCase("healthLog")){
-    			type = ((HealthLog)listItem).getDate();
+    			tempStr = ((HealthLog)listItem).getDate();
     		}else if (type.equalsIgnoreCase("workout")){
-    			type = ((Workout)listItem).getName();
+    			tempStr = ((Workout)listItem).getName();
     		}
-    		if(searchFor.equalsIgnoreCase(type))
+    		if(searchFor.equalsIgnoreCase(tempStr))
     				return listItem;
     	}
     	return null;
     }
     
+    public static double[] graphData(int id, String chartType, String type, String searchFor){
+    	LinkedList<Object>  searchList = theData;
+    	int i = 0;
+    	Object listItem;
+    	double[] foundData = null;
+    	
+    	do{
+    		listItem = search(type, searchFor);
+    		if( (((HealthLog)listItem).getID() == id) && (chartType.equalsIgnoreCase("DBP")) ){
+    			foundData[i] = ((HealthLog)listItem).getDBP();
+    		}else if ( (((HealthLog)listItem).getID() == id) && (chartType.equalsIgnoreCase("SBP")) ){
+    			foundData[i] = ((HealthLog)listItem).getSBP();
+    		}else if ( (((HealthLog)listItem).getID() == id) && (chartType.equalsIgnoreCase("Caloriesbrunt")) ){
+    			foundData[i] = ((HealthLog)listItem).getCalsBurned();
+    		}else if ( (((HealthLog)listItem).getID() == id) && (chartType.equalsIgnoreCase("Caloriesintake")) ){
+    			foundData[i] = ((HealthLog)listItem).getCalsBurned();
+    		}else if ( (((HealthLog)listItem).getID() == id) && (chartType.equalsIgnoreCase("sleep")) ){
+    			foundData[i] = ((HealthLog)listItem).getSleep();
+    		}else if ( (((HealthLog)listItem).getID() == id) && (chartType.equalsIgnoreCase("exercise")) ){
+    			foundData[i] = ((HealthLog)listItem).getSleep();
+    		}
+    		i++;
+    	}while(i < searchList.size());
+    	return foundData;
+    }
 }

@@ -942,7 +942,7 @@ public class GUI extends JFrame {
 		
 	//-----------------------------------------------------------------------------------
 		//Patient to load users current info
-		guiPatient = new Patient((Patient)UserController.search(guiCurrentUser.getType(), guiCurrentUser.getEmail()));
+		guiPatient = (Patient)UserController.search(guiCurrentUser.getType(), guiCurrentUser.getEmail());
 		//Create EDIT ACCOUNT PANEL and all contents
 		editPanel = new JPanel();
 		editPanel.setBounds(6, 6, 603, 349);
@@ -952,21 +952,21 @@ public class GUI extends JFrame {
 
 		//creates text field for user to input first name
 		txtFirstName = new JTextField();
-		txtFirstName.setText(guiPatient.getFirstName());
+		txtFirstName.setText("" /*guiPatient.getFirstName()*/);
 		txtFirstName.setBounds(65, 66, 94, 28);
 		editPanel.add(txtFirstName);
 		txtFirstName.setColumns(10);
 		
 		//creates text field for user to input last name
 		txtLastName = new JTextField();
-		txtLastName.setText(guiPatient.getLastName());
+		txtLastName.setText(""/*guiPatient.getLastName()*/);
 		txtLastName.setBounds(161, 66, 88, 28);
 		editPanel.add(txtLastName);
 		txtLastName.setColumns(10);
 			
 		//Creates text field for user to input address
 		txtStreetAddress = new JTextField();
-		txtStreetAddress.setText(guiPatient.getAddress().street);
+		txtStreetAddress.setText(""/*guiPatient.getAddress().street*/);
 		txtStreetAddress.setBounds(63, 92, 134, 28);
 		editPanel.add(txtStreetAddress);
 		txtStreetAddress.setColumns(10);
@@ -974,14 +974,14 @@ public class GUI extends JFrame {
 		
 		//creates text field for user to input zipcode
 		txtZipCode = new JTextField();
-		txtZipCode.setText(guiPatient.getAddress().zipCode);
+		txtZipCode.setText(""/*guiPatient.getAddress().zipCode*/);
 		txtZipCode.setBounds(198, 92, 69, 28);
 		editPanel.add(txtZipCode);
 		txtZipCode.setColumns(10);
 				
 		//creates text field for user to input city
 		txtCity = new JTextField();
-		txtCity.setText(guiPatient.getAddress().city);
+		txtCity.setText(""/*guiPatient.getAddress().city*/);
 		txtCity.setBounds(65, 120, 88, 28);
 		editPanel.add(txtCity);
 		txtCity.setColumns(10);
@@ -993,7 +993,7 @@ public class GUI extends JFrame {
 				
 		//creates text field for user to input phone number
 		txtPhoneNumber = new JTextField();
-		txtPhoneNumber.setText(guiPatient.getAddress().phone);
+		txtPhoneNumber.setText(""/*guiPatient.getAddress().phone*/);
 		txtPhoneNumber.setBounds(65, 153, 134, 28);
 		editPanel.add(txtPhoneNumber);
 		txtPhoneNumber.setColumns(10);
@@ -1049,21 +1049,21 @@ public class GUI extends JFrame {
 		
 		//creates text field for user to enter a new password
 		txtPassword = new JTextField();
-		txtPassword.setText(guiPatient.getPassword());
+		txtPassword.setText(""/*guiPatient.getPassword()*/);
 		txtPassword.setBounds(371, 121, 134, 28);
 		editPanel.add(txtPassword);
 		txtPassword.setColumns(10);		
 		
 		//creates text field for user to verify password
 		txtVerifyPassword = new JTextField();
-		txtVerifyPassword.setText(guiPatient.getPassword());
+		txtVerifyPassword.setText(""/*guiPatient.getPassword()*/);
 		txtVerifyPassword.setBounds(371, 179, 134, 28);
 		editPanel.add(txtVerifyPassword);
 		txtVerifyPassword.setColumns(10);		
 		
 		//creates text field for user to enter password hint
 		txtPasswordHint = new JTextField();
-		txtPasswordHint.setText(guiPatient.getHint());
+		txtPasswordHint.setText(""/*guiPatient.getHint()*/);
 		txtPasswordHint.setBounds(371, 153, 134, 28);
 		editPanel.add(txtPasswordHint);
 		txtPasswordHint.setColumns(10);
