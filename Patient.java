@@ -24,29 +24,29 @@ public class Patient extends User {
 		this.doctorSugestions = new LinkedList<String>();
 	}
 	
-//	Patient( Patient p){
-//		try{
-//		this.setID(p.getID());
-//		this.setEmail(p.getEmail());
-//		this.setFirstName(p.getFirstName());
-//		this.setLastName(p.getLastName());
-//		this.setPassword(p.getPassword());
-//		this.setHint(p.getHint());
-//		this.setType(p.getType());
-//
-//		this.PatientiD = p.PatientiD;
-//		this.age = p.age;
-//		this.birthDate = p.birthDate;
-//		this.weight = p.weight;
-//		this.height = p.height;
-//		this.bmi = p.bmi;
-//		this.type = "Patient";
-//		this.pAddress = p.pAddress;
-//		this.doctorSugestions = p.doctorSugestions;
-//		}catch(NullPointerException e){
-//			e.printStackTrace();
-//		}
-//	}
+	public Patient( Patient p){
+		if( p != null){
+			this.setID(p.getID());
+			this.setEmail(p.getEmail());
+			this.setFirstName(p.getFirstName());
+			this.setLastName(p.getLastName());
+			this.setPassword(p.getPassword());
+			this.setHint(p.getHint());
+			this.setType(p.getType());
+	
+			this.PatientiD = p.PatientiD;
+			this.age = p.age;
+			this.birthDate = p.birthDate;
+			this.weight = p.weight;
+			this.height = p.height;
+			this.bmi = p.bmi;
+			this.type = "Patient";
+			this.pAddress = p.pAddress;
+			this.doctorSugestions = p.doctorSugestions;
+		}
+	}
+	
+	
 	public Patient(int a, String bD, double w, double h, int bmi){
 		this.age = a;
 		this.birthDate = bD;

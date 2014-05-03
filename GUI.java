@@ -3,11 +3,9 @@
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.lang.String;
-import java.text.MessageFormat;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-//import java.awt.print.PrinterException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,6 +27,9 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.rtf.RTFEditorKit;
+
+import com.toedter.calendar.JDateChooser;
+
 
 
 
@@ -52,13 +53,16 @@ public class GUI extends JFrame {
 	public JTextField passwordTextField;
 	public JButton btnEnter;
 	public JButton btnExit_Forgot;
+	public JComboBox accountType;
 	
-	public String username = "jo";
+	public String username;
 	public String usernameEntered;
-	public String password = "no";
+	public String password;
 	public String passwordEntered;
 	public String hint;
 	public JButton btnEnterPassword;
+	public String doctorEntered;
+	public String docPasswordEntered;
 	
 	//DECLARING FOR LOGIN FRAME
 	public JFrame login;
@@ -90,7 +94,7 @@ public class GUI extends JFrame {
 			"Bosu Kneeling Pushups","Arnold Press","Kettlebell Upright Row","\n",
 			"LOWER BODY","---------","Beginner Squat","Calf Raise","Machine Leg Extension",
 			"Machine Leg Curl"};
-	public JLabel enterExercise_label;
+	public JLabel dateExercise_label;
 	public JLabel selectExercise_label;
 	public String chosenExercise;
 	public JLabel or_Label;
@@ -139,9 +143,17 @@ public class GUI extends JFrame {
 	public JTable table;
 	public String[] columnNames = {"Health Indicator","Data"};
 	public Object[][] data;
+	public JComboBox graphType;
+	public String[] type = {"Weekly","Monthly"};
+	public String data_graphType;
+	public JComboBox type_ChoiceBox;
+	public String [] choosePie= {null,"Exercise Summary", "Hours Slept", "Caloric Intake"};
+	public String pieChoice;
 	public JComboBox graphChoice;
-	public String[] chooseGraph = { "Choose a Graph","Blood Pressure","Calories","Hours Slept","Exercise Summary"};
+	public String[] chooseGraph = {null,"Blood Pressure","Calories","Hours Slept","Exercise Summary"};
+	public String data_graphChoice;
 	public JTable healthTable;
+	public JTable workoutSumarry_Table;
 	
 
 	
@@ -204,10 +216,11 @@ public class GUI extends JFrame {
 	public JTextArea patients;
 	public JComboBox data_graphBox;
 	public JTextArea txtSuggestions;
-	public String data_graphChoice;
 	public String suggestions;
 	public JButton btnSubmit_Doctor;
 	public JTextArea noteFromDoctor;
+	public String doctorUsername = " testDoc";
+	public  String doctorPassword = "doc";
 	
 	//Delcaring JComboBoxes used in multiple frames
 	public JComboBox genderBox;
@@ -229,29 +242,8 @@ public class GUI extends JFrame {
 			"South Dakota","Tennessee","Texas","Utah","Vermont","Virginia",
 			"Washington","West Virginia","Wisconsin","Wyoming"};
 	
-	//declare and initialize array of the months for the month combo box used by edit panel, create user frame, track health info panel
-	public String[] month = {"January","February","March","April","May","June",
-			"July","August","September","October","November","December"};
-	
-	//declare and initialize array of numbers from 1-31 for the day combo box used by edit panel, create user frame, track health info panel
-	public String[] day = {"1","2","3","4","5","6","7","8","9","10","11","12","13","14","15",
-							"16","17","18","19","20","21","22","23","24","25","26","27","28",
-							"29","30","31"};
-	
-	//declare and initialize array of years from 1900-2040 for year combo box used by edit panel, create user frame, track health info panel
-	public String[] year = {"1900","1901","1902","1903","1904","1905","1906","1907","1908","1909","1910",
-							"1911","1912","1913","1914","1915","1916","1917","1918","1919","1920","1921",
-							"1922","1923","1924","1925","1926","1927","1928","1929","1930","1931","1932",
-							"1933","1934","1935","1936","1937","1938","1939","1940","1941","1942","1943",
-							"1944","1945","1946","1947","1948","1949","1950","1951","1952","1953","1954",
-							"1955","1956","1957","1958","1959","1960","1961","1962","1963","1964","1965",
-							"1966","1967","1968","1969","1970","1971","1972","1973","1974","1975","1976",
-							"1977","1978","1979","1980","1981","1982","1983","1984","1985","1986","1987",
-							"1988","1989","1990","1991","1992","1993","1994","1995","1996","1997","1998",
-							"1999","2000","2001","2002","2003","2004","2005","2006","2007","2008","2009",
-							"2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020",
-							"2021","2022","2023","2024","2025","2026","2027","2028","2029","2030","2031",
-							"2032","2033","2034","2035","2036","2037","2038","2039","2040"};
+		
+
 	
 	UserController controller;
 	User guiCurrentUser;
@@ -264,6 +256,7 @@ public class GUI extends JFrame {
 	int idCounter = 0;	//counter for ids
 	int foundIndex = 0; //int for indexsearch results
 	String foundString = null;
+	
 
 
 	/**
@@ -288,19 +281,19 @@ public class GUI extends JFrame {
 	@SuppressWarnings("deprecation")
 	public void initialize1() throws IOException {
 		controller = new UserController();
-
+		controller.fileRead();
 		//TABS
 		tabs = new JTabbedPane();
 		
 		//Creates LOGIN FRAME and all its contents
 		login = new JFrame();
-		login.setBounds(100, 100, 615, 383);
+		login.setBounds(100, 100, 616, 405);
 		login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		login.getContentPane().setLayout(null);
 		
 		//creates login panel
 		loginPanel = new JPanel();
-		loginPanel.setBounds(6, 6, 603, 349);
+		loginPanel.setBounds(6, 6, 603, 370);
 		login.getContentPane().add(loginPanel);
 		loginPanel.setLayout(null);
 		
@@ -373,8 +366,6 @@ public class GUI extends JFrame {
 		btnLogin.setBounds(238, 194, 117, 29);
 		btnLogin.setFont(new Font("Lucida Grande", Font.BOLD, 13));
 		loginPanel.add(btnLogin);
-		
-		
 		
 		//adds action to the Login button
 		btnLogin.addActionListener(new ActionListener() {
@@ -480,6 +471,7 @@ public class GUI extends JFrame {
 		logoutAccount.addActionListener(new ActionListener() {
 			//when Back button is clicked, it takes the user to create user frame
 			public void actionPerformed(ActionEvent arg0) {
+				controller.fileWrite();
 			// hides login frame
 			activitiesFrame.setVisible(false);
 			//shows create user frame
@@ -497,34 +489,16 @@ public class GUI extends JFrame {
 		exercisePanel.setLayout(null);
 		tabs.addTab("Track Exercise", exercisePanel);
 		
-		//creates label to prompt user to enter a new exercise
-		enterExercise_label = new JLabel("Enter a New Exercise");
-		enterExercise_label.setHorizontalAlignment(SwingConstants.CENTER);
-		enterExercise_label.setBounds(81, 65, 157, 16);
-		exercisePanel.add(enterExercise_label);
-		
-		//creates text field for user to input new work outs
-		newWorkout = new JTextField();
-		newWorkout.setHorizontalAlignment(SwingConstants.CENTER);
-		newWorkout.setBounds(95, 93, 134, 28);
-		exercisePanel.add(newWorkout);
-		newWorkout.setColumns(10);
-		
 		//creates label that prompts user to select a given workout
 		selectExercise_label = new JLabel("Select a Given Exercise");
 		selectExercise_label.setHorizontalAlignment(SwingConstants.CENTER);
-		selectExercise_label.setBounds(345, 65, 166, 16);
+		selectExercise_label.setBounds(210, 65, 166, 16);
 		exercisePanel.add(selectExercise_label);		
 		
 		//displays given work outs in jcombobox
 		givenWorkout = new JComboBox(exercise);
-		givenWorkout.setBounds(341, 93, 181, 28);
+		givenWorkout.setBounds(200, 93, 181, 28);
 		exercisePanel.add(givenWorkout);
-		
-		//creates or label
-		or_Label = new JLabel("OR");
-		or_Label.setBounds(278, 93, 33, 16);
-		exercisePanel.add(or_Label);
 		
 		//creates duration label
 		duration_label = new JLabel("Duration of Exercise");
@@ -544,6 +518,17 @@ public class GUI extends JFrame {
 		hours_label.setBounds(180, 185, 219, 16);
 		exercisePanel.add(hours_label);	
 		
+		//creates label to prompt user to enter a new exercise
+		dateExercise_label = new JLabel("Date of Exercise");
+		dateExercise_label.setHorizontalAlignment(SwingConstants.CENTER);
+		dateExercise_label.setBounds(345, 142, 157, 16);
+		exercisePanel.add(dateExercise_label);
+		
+		//date chooser
+		JDateChooser exerciseDate = new JDateChooser();
+		exerciseDate.setBounds(385, 185, 88, 28);
+		exercisePanel.add(exerciseDate);
+		
 		//creates button for user to add an exercise to their log
 		btnAdd = new JButton("Add");
 		btnAdd.setBounds(100, 225, 117, 29);
@@ -556,11 +541,7 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				workoutDuration = Double.parseDouble(txtDuration.getText());
 				//saves work outs to an array of work outs
-				if (newWorkout.getText() != null){
-					workout = newWorkout.getText();
-				}else{
-					workout = (String)givenWorkout.getSelectedItem();
-				}
+				workout = (String)givenWorkout.getSelectedItem();
 				
 				guiWorkout = new Workout(guiCurrentUser.getID(),workout,workoutDuration);
 				UserController.theData.add(guiWorkout);
@@ -595,6 +576,7 @@ public class GUI extends JFrame {
 			//when logout button is clicked, it takes the user back to login page
 			@Override
 			public void actionPerformed(ActionEvent arg0) {		
+				controller.fileWrite();
 				//hide the activities frame
 				viewExerciseFrame.setVisible(false);
 				//shows the login frame
@@ -707,22 +689,11 @@ public class GUI extends JFrame {
 		dateOfEntry_label.setFont(new Font("Lucida Grande", Font.BOLD, 13));
 		dateOfEntry_label.setBounds(383, 66, 93, 16);
 		healthPanel.add(dateOfEntry_label);
-	
-		//creates combo box for the month
-		monthBox_health = new JComboBox(month);
-		monthBox_health.setToolTipText("");
-		monthBox_health.setBounds(300, 84, 100, 27);
-		healthPanel.add(monthBox_health);		
-
-		//creates combo box for the day
-		dayBox_health = new JComboBox(day);
-		dayBox_health.setBounds(393, 84, 63, 26);
-		healthPanel.add(dayBox_health);
 		
-		//creates combo box for the year
-		yearBox_health = new JComboBox(year);
-		yearBox_health.setBounds(453, 84, 88, 27);
-		healthPanel.add(yearBox_health);
+		//date chooser
+		JDateChooser dateChooser = new JDateChooser();
+		dateChooser.setBounds(385, 84, 88, 28);
+		healthPanel.add(dateChooser);
 		
 		//creates label for time of entry
 		timeOfEntry_label = new JLabel("Time of Entry");
@@ -764,25 +735,9 @@ public class GUI extends JFrame {
 				userYear_health = (String)yearBox_health.getSelectedItem();
 				userTimeEntry = Integer.parseInt(txtEntryTime.getText());
 				userAm_Pm = (String)am_pm.getSelectedItem();
-				
-				
 				guiHealthLog = new HealthLog(guiCurrentUser.getID(),"userMonth_health+userDay_health+userYear_health",
 						userSleep,userBurned,userIntake,userSystolic,userDiastolic);
 				UserController.theData.add(guiHealthLog);
-				
-				/** if (health info submitted properly)
-				 * {
-				 * 		//displays success message if account created
-				 * 		JOptionPane.showMessageDialog(createUser, "Health Indicator Saved!","A plain message",
-    							JOptionPane.PLAIN_MESSAGE);
-    				}
-    				else
-    				{
-    					//displays error message
-    					JOptionPane.showMessageDialog(createUser, "Health Indicators were not properly saved","Inane error",
-    							JOptionPane.ERROR_MESSAGE);
-    				}
-				 */
 				
 			}
 		});
@@ -799,48 +754,106 @@ public class GUI extends JFrame {
 		viewPanel.setLayout(null);
 		tabs.addTab("View Summary", viewPanel);
 		
+		graphType = new JComboBox(type);
+		graphType.setBounds(250, 6, 112, 27);
+		viewPanel.add(graphType);
+		
+		//creates combo box for user to select hte graph they wish to view
+		type_ChoiceBox = new JComboBox(choosePie);
+		type_ChoiceBox.setBounds(370, 6, 186, 27);
+		viewPanel.add(type_ChoiceBox);
+		
+		
+		graphType.addActionListener(new ActionListener() {
+			//when button is clicked, screen changes to activities frame
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				//saves user's choice for what to view
+				
+				data_graphType = (String)graphType.getSelectedItem();
+				//if monthly graph is selected
+				if("Monthly".equals(data_graphType)){
+					type_ChoiceBox.setVisible(false);
+					graphChoice.setVisible(true);
+				}
+				//if weekly graph type is selected
+				else{
+					graphChoice.setVisible(false);
+					type_ChoiceBox.setVisible(true);
+				}			
+			}
+		});
+		
 		//creates combo box for user to select the graph they wish to view
 		graphChoice = new JComboBox(chooseGraph);
 		graphChoice.setBounds(370, 6, 186, 27);
 		viewPanel.add(graphChoice);
-		
-		
+		graphChoice.setVisible(false);
+						
 		graphChoice.addActionListener(new ActionListener() {
 			//when button is clicked, screen changes to activities frame
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				//saves doctor's choice for what to view
-				data_graphChoice = (String)graphChoice.getSelectedItem();
+				//saves user's choice for what to view
+					
+					data_graphChoice = (String)graphChoice.getSelectedItem();
+					//if data table is selected	
+					if("Calories".equals(data_graphChoice))
+					{
+						calorieGraph calorieChart = new calorieGraph(null, "Calorie Summary");
+					    calorieChart.pack();
+					    calorieChart.setVisible(true);
+					}
+					//if blood pressure is selected
+					else if("Blood Pressure".equals(data_graphChoice))
+					{
+					      bloodPressureGraph pressureChart = new bloodPressureGraph(null, "Blood Pressure Summary");
+					      pressureChart.pack();
+					      pressureChart.setVisible(true);
+					}
+					//if exercise is selected
+					else if("Exercise Summary".equals(data_graphChoice))
+					{
+						exerciseGraph workoutChart = new exerciseGraph(null, "Work Out Summary");
+						workoutChart.pack();
+					    workoutChart.setVisible(true);
+					    
+					}
+					//if calories was selected
+					else
+					{
+						sleepGraph sleepChart = new sleepGraph(null, "Sleep Summary");
+					    sleepChart.pack();
+					    sleepChart.setVisible(true);
+					}
+				}	
+		});
+			
+		type_ChoiceBox.addActionListener(new ActionListener() {
+			//when button is clicked, screen changes to activities frame
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
 				
-				//if data table is selected
-				if("Calories".equals(data_graphChoice))
-				{
-					calorieGraph calorieChart = new calorieGraph(null, "Calorie Summary");
-				    calorieChart.pack();
-				    calorieChart.setVisible(true);
-				}
-				//if blood pressure is selected
-				else if("Blood Pressure".equals(data_graphChoice))
-				{
-				      bloodPressureGraph pressureChart = new bloodPressureGraph(null, "Blood Pressure Summary");
-				      pressureChart.pack();
-				      pressureChart.setVisible(true);
-				}
-				//if exercise is selected
-				else if("Exercise Summary".equals(data_graphChoice))
-				{
-					exerciseGraph workoutChart = new exerciseGraph(null, "Work Out Summary");
-				    workoutChart.pack();
-				    workoutChart.setVisible(true);
-				}
-				//if calories was selected
-				else
-				{
-					sleepGraph sleepChart = new sleepGraph(null, "Sleep Summary");
-				    sleepChart.pack();
-				    sleepChart.setVisible(true);
-				}
+				//saves user's choice for what to view
+		
+					pieChoice = (String)type_ChoiceBox.getSelectedItem();
+
+					if("Exercise Summary".equals(pieChoice))
+					{
+						pieCharts.exercisePieChart();
+					}
+					
+					else if("Hours Slept".equals(pieChoice))
+					{
+						pieCharts.sleepPieChart();
+					}
+					else
+					{
+						pieCharts.caloriePieChart(); 
+					}
+				
 		
 			}
 		});
@@ -892,7 +905,7 @@ public class GUI extends JFrame {
 		
 		
 		//creates table for workout summary
-		JTable workoutSumarry_Table = new JTable(rowData, columnHeaders);
+		workoutSumarry_Table = new JTable(rowData, columnHeaders);
 		workoutSumarry_Table.getColumnModel().getColumn(0).setPreferredWidth(130);
 		workoutSumarry_Table.setFillsViewportHeight(true);
 		workoutSumarry_Table.setBounds(0, 0, 236, 132);
@@ -903,9 +916,13 @@ public class GUI extends JFrame {
 		scrollWorkouts.setBounds(0, 0, 298, 214);
 		workoutSummary_Panel.add(scrollWorkouts);
 		
-		JButton printButton = new JButton("Print ");
-		printButton.setBounds(21, 5, 186, 29);
+		JButton printButton = new JButton("Print");
+		printButton.setBounds(21, 5, 120, 29);
 		viewPanel.add(printButton);
+		
+		
+		
+		//MAKE SURE WORKS
 		
 		//adds action to the viewExercise button
 		printButton.addActionListener(new ActionListener() {
@@ -913,36 +930,16 @@ public class GUI extends JFrame {
 		//that shows how to do each work out that was given in combo box
 			@Override
 			public void actionPerformed(ActionEvent arg0) {		
-						
-				MessageFormat header = new MessageFormat("Page {0,number,integer}");
-				try {
-				    healthTable.print(JTable.PrintMode.FIT_WIDTH, header, null);
-				} catch (java.awt.print.PrinterException e) {
-				    System.err.format("Cannot print %s%n", e.getMessage());
-				}
-		}});
-		
-				//neeeeeeed to finish print
 				
-				//try {
-				    //boolean complete = healthTable.print();
-				    //if (complete) {
-				        /* show a success message  */
-				        
-				    //} else {
-				        /*show a message indicating that printing was cancelled */
-				       
-				  //  }
-				//} catch (PrinterException pe) {
-				    /* Printing failed, report to the user */
-				   
-				//}
+				pieCharts.print();
+			
+		}});
 		
 		
 		
 	//-----------------------------------------------------------------------------------
-		//Patient to load users current info
-		guiPatient = (Patient)UserController.search(guiCurrentUser.getType(), guiCurrentUser.getEmail());
+		
+		
 		//Create EDIT ACCOUNT PANEL and all contents
 		editPanel = new JPanel();
 		editPanel.setBounds(6, 6, 603, 349);
@@ -952,21 +949,21 @@ public class GUI extends JFrame {
 
 		//creates text field for user to input first name
 		txtFirstName = new JTextField();
-		txtFirstName.setText("" /*guiPatient.getFirstName()*/);
+		txtFirstName.setText("First Name");
 		txtFirstName.setBounds(65, 66, 94, 28);
 		editPanel.add(txtFirstName);
 		txtFirstName.setColumns(10);
 		
 		//creates text field for user to input last name
 		txtLastName = new JTextField();
-		txtLastName.setText(""/*guiPatient.getLastName()*/);
+		txtLastName.setText("Last Name");
 		txtLastName.setBounds(161, 66, 88, 28);
 		editPanel.add(txtLastName);
 		txtLastName.setColumns(10);
 			
 		//Creates text field for user to input address
 		txtStreetAddress = new JTextField();
-		txtStreetAddress.setText(""/*guiPatient.getAddress().street*/);
+		txtStreetAddress.setText("Street Address");
 		txtStreetAddress.setBounds(63, 92, 134, 28);
 		editPanel.add(txtStreetAddress);
 		txtStreetAddress.setColumns(10);
@@ -974,14 +971,14 @@ public class GUI extends JFrame {
 		
 		//creates text field for user to input zipcode
 		txtZipCode = new JTextField();
-		txtZipCode.setText(""/*guiPatient.getAddress().zipCode*/);
+		txtZipCode.setText("Zip Code");
 		txtZipCode.setBounds(198, 92, 69, 28);
 		editPanel.add(txtZipCode);
 		txtZipCode.setColumns(10);
 				
 		//creates text field for user to input city
 		txtCity = new JTextField();
-		txtCity.setText(""/*guiPatient.getAddress().city*/);
+		txtCity.setText("City");
 		txtCity.setBounds(65, 120, 88, 28);
 		editPanel.add(txtCity);
 		txtCity.setColumns(10);
@@ -993,21 +990,21 @@ public class GUI extends JFrame {
 				
 		//creates text field for user to input phone number
 		txtPhoneNumber = new JTextField();
-		txtPhoneNumber.setText(""/*guiPatient.getAddress().phone*/);
+		txtPhoneNumber.setText("Phone Number");
 		txtPhoneNumber.setBounds(65, 153, 134, 28);
 		editPanel.add(txtPhoneNumber);
 		txtPhoneNumber.setColumns(10);
 			
 		//creates text field for user's inputed height 
 		txtHeight = new JTextField("0'00''");
-//		txtHeight.setText(guiPatient.getHeight());
+		txtHeight.setText("Height");
 		txtHeight.setBounds(65, 179, 88, 28);
 		editPanel.add(txtHeight);
 		txtHeight.setColumns(10);
 				
 		//creates text field for user to input weight
 		txtWeight = new JTextField();
-//		txtWeight.setText(guiPatient.getWeight());
+		txtWeight.setText("Weight (lbs)");
 		txtWeight.setBounds(65, 203, 88, 28);
 		editPanel.add(txtWeight);
 		txtWeight.setColumns(10);		
@@ -1019,21 +1016,10 @@ public class GUI extends JFrame {
 		birthLabel.setBounds(371, 54, 134, 16);
 		editPanel.add(birthLabel);
 		
-		//creates combo box of months for user to choose 
-		monthBox_birth = new JComboBox(month);
-		monthBox_birth.setToolTipText("");
-		monthBox_birth.setBounds(310, 68, 100, 27);
-		editPanel.add(monthBox_birth);		
-		
-		//creates combo box of days in a month for user to select
-		dayBox_birth = new JComboBox(day);
-		dayBox_birth.setBounds(403, 68, 63, 26);
-		editPanel.add(dayBox_birth);
-				
-		//Creates combo box for user to select the year they were born
-		yearBox_birth = new JComboBox(year);
-		yearBox_birth.setBounds(458, 68, 99, 27);
-		editPanel.add(yearBox_birth);		
+		//date chooser
+		JDateChooser birthday = new JDateChooser();
+		birthday.setBounds(395, 70, 88, 28);
+		editPanel.add(birthday);		
 		
 		//creates combo box for user to choose a gender
 		genderBox = new JComboBox(gender);
@@ -1049,21 +1035,21 @@ public class GUI extends JFrame {
 		
 		//creates text field for user to enter a new password
 		txtPassword = new JTextField();
-		txtPassword.setText(""/*guiPatient.getPassword()*/);
+		txtPassword.setText("New Password");
 		txtPassword.setBounds(371, 121, 134, 28);
 		editPanel.add(txtPassword);
 		txtPassword.setColumns(10);		
 		
 		//creates text field for user to verify password
 		txtVerifyPassword = new JTextField();
-		txtVerifyPassword.setText(""/*guiPatient.getPassword()*/);
+		txtVerifyPassword.setText("Verify Password");
 		txtVerifyPassword.setBounds(371, 179, 134, 28);
 		editPanel.add(txtVerifyPassword);
 		txtVerifyPassword.setColumns(10);		
 		
 		//creates text field for user to enter password hint
 		txtPasswordHint = new JTextField();
-		txtPasswordHint.setText(""/*guiPatient.getHint()*/);
+		txtPasswordHint.setText("Password Hint");
 		txtPasswordHint.setBounds(371, 153, 134, 28);
 		editPanel.add(txtPasswordHint);
 		txtPasswordHint.setColumns(10);
@@ -1106,7 +1092,7 @@ public class GUI extends JFrame {
 						    "Entered password did not match the password verification",
 						    "Inane error",
 						    JOptionPane.ERROR_MESSAGE);
-				}		
+				}	
 			}
 		});
 		
@@ -1220,7 +1206,6 @@ public class GUI extends JFrame {
 		submitCreated.setBounds(371, 245, 117, 29);
 		createUserPanel.add(submitCreated);
 		
-
 		//adds action to the Submit button
 		submitCreated.addActionListener(new ActionListener() {
 			//when submit button is clicked it created the user
@@ -1301,6 +1286,11 @@ public class GUI extends JFrame {
 		forgotPasswordFrame.getContentPane().add(forgotPanel);
 		forgotPanel.setLayout(null);
 		
+		//combo box to choose if patient or doctor
+		accountType = new JComboBox(choice);
+		accountType.setBounds(50, 64, 107, 27);
+		forgotPanel.add(accountType);
+		
 		//creates enter username label
 		JLabel usernameLabel = new JLabel("Enter UserName");
 		usernameLabel.setBounds(161, 69, 107, 16);
@@ -1318,7 +1308,7 @@ public class GUI extends JFrame {
 		forgotPanel.add(hintLabel);
 		
 		//creates label that will show the hint if username entered is found
-		showHint = new JLabel(" ");
+		showHint = new JLabel(hint);
 		showHint.setBounds(271, 109, 254, 16);
 		forgotPanel.add(showHint);
 		showHint.setVisible(false);
@@ -1333,37 +1323,37 @@ public class GUI extends JFrame {
 			//when Enter button is clicked, it saves the user's input and compares to others in database
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-			   
-				first = txtFirstName.getText();
-				last = txtLastName.getText();
-				usernameEntered = usernameTextField.getText();
-				
-				contains = UserController.listSearch("Patient", usernameEntered);
-
-				//CHANGE TO FIND "username" from database
-				//if the username inputed by user matches a username in the database
-				if(contains)
-				{
-					guiPatient = (Patient) UserController.search("patient", usernameEntered);
-					guiPatient.setAuthenticate(true);
-					//shows the hint chosen by the user
-					showHint.setText(guiPatient.getHint());
-					showHint.setVisible(true);
-					passwordLabel.setVisible(true);
-					passwordTextField.setVisible(true);
-					btnEnterPassword.setVisible(true);
+				   
+					first = txtFirstName.getText();
+					last = txtLastName.getText();
+					usernameEntered = usernameTextField.getText();
 					
-				}
-				//the username was not found in the database
-				else
-				{
-					//shows error message
-					JOptionPane.showMessageDialog(forgotPanel, "Username was not found","A plain message",
-		    				JOptionPane.PLAIN_MESSAGE);
-					//hides the hint
-					showHint.setVisible(false);
-				}
-			
+					contains = UserController.listSearch("Patient", usernameEntered);
+
+					//CHANGE TO FIND "username" from database
+					//if the username inputed by user matches a username in the database
+					if(contains)
+					{
+						guiPatient = (Patient) UserController.search("patient", usernameEntered);
+						guiPatient.setAuthenticate(true);
+						//shows the hint chosen by the user
+						showHint.setText(guiPatient.getHint());
+						showHint.setVisible(true);
+						passwordLabel.setVisible(true);
+						passwordTextField.setVisible(true);
+						btnEnterPassword.setVisible(true);
+						
+					}
+					//the username was not found in the database
+					else
+					{
+						//shows error message
+						JOptionPane.showMessageDialog(forgotPanel, "Username was not found","A plain message",
+			    				JOptionPane.PLAIN_MESSAGE);
+						//hides the hint
+						showHint.setVisible(false);
+					}
+				
 			}
 		});
 		
@@ -1391,6 +1381,7 @@ public class GUI extends JFrame {
 			//when button is clicked, it saves and checks password inputed by user
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				
 				//saves user input
 				usernameEntered = usernameTextField.getText();
@@ -1431,174 +1422,19 @@ public class GUI extends JFrame {
 				login.setVisible(true);
 			}
 		});		
-		
-		
-		//creates DOCTOR FRAME and all of its content
-		Doctor = new JFrame();
-		Doctor.setBounds(100, 100, 681, 479);
-		Doctor.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Doctor.getContentPane().setLayout(null);
-		Doctor.setVisible(false);
-		
-		//PRINT PATIENTS NAME IN TEXTAREA
-		//creates JTextArea and JScrollPane
-		patients = new JTextArea();
-		scrollPane = new JScrollPane();
-		scrollPane.setBounds(6, 6, 195, 445);
-		Doctor.getContentPane().add(scrollPane);
-		
-		//creates panel for graph and data
-		patientInfoPanel = new JPanel();
-		patientInfoPanel.setBounds(213, 37, 462, 272);
-		Doctor.getContentPane().add(patientInfoPanel);
-		
-	
-		
-		healthIndicator_Panel = new JPanel(null);
-		healthIndicator_Panel.setBounds(6, 6, 236, 132);
-		Doctor.add(healthIndicator_Panel);
 
-		//creates health table
-		healthTable = new JTable(rowInfo, columnNames);
-		healthTable.getColumnModel().getColumn(0).setPreferredWidth(145);
-		healthTable.setFillsViewportHeight(true);
-		healthTable.setBounds(6,24,236,132);
-		healthTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		
-	    //creates scroll pane for health table to be in
-		scrollHealthTable = new JScrollPane(healthTable);
-	    scrollHealthTable.setBounds(0,0,236,132);
-	    healthIndicator_Panel.add(scrollHealthTable);
+	}
 
-	    //creates panel for work out summary table
-	    workoutSummary_Panel = new JPanel(null);
-	    workoutSummary_Panel.setBounds(6, 140, 236, 183);
-	    Doctor.add(workoutSummary_Panel);	
-		
-		
-		//doctors needs specific patients info
-		//sets rows and columns for work out summary table
-		//need to make it take in info from user
-		//Object rowData[][] = { userWorkouts, userDuration  };
-		//Object columnHeaders [] = { "Exercise","Duration (hrs)"};
-		
-		//neeeeeeed to finish print
-		
-		//try {
-		    //boolean complete = healthTable.print();
-		    //if (complete) {
-		        /* show a success message  */
-		        
-		    //} else {
-		        /*show a message indicating that printing was cancelled */
-		       
-		  //  }
-		//} catch (PrinterException pe) {
-		    /* Printing failed, report to the user */
-		   
-		//}
-			
-		
-		
-		//creates table for workout summary
-		workoutSumarry_Table = new JTable(rowData, columnHeaders);
-		workoutSumarry_Table.getColumnModel().getColumn(0).setPreferredWidth(130);
-		workoutSumarry_Table.setFillsViewportHeight(true);
-		workoutSumarry_Table.setBounds(0, 0, 236, 132);
-		workoutSumarry_Table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		
-		//creates scroll pane for work out summary table
-		scrollWorkouts = new JScrollPane(workoutSumarry_Table);
-		scrollWorkouts.setBounds(0, 0, 236, 177);
-		workoutSummary_Panel.add(scrollWorkouts);	
-		
-		data_graphBox = new JComboBox(chooseGraph);
-		data_graphBox.setBounds(418, 6, 257, 27);
-		Doctor.getContentPane().add(data_graphBox);
-		
-		txtSuggestions = new JTextArea();
-		txtSuggestions.setText("Enter notes for patient");
-		txtSuggestions.setRows(10);
-		txtSuggestions.setBounds(213, 318, 338, 133);
-		Doctor.getContentPane().add(txtSuggestions);
-		
-		data_graphBox.addActionListener(new ActionListener() {
-			//when button is clicked, screen changes to activities frame
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
-				//saves doctor's choice for what to view
-				data_graphChoice = (String)data_graphBox.getSelectedItem();
-				
-				//if data table is selected
-				if("Calories".equals(data_graphChoice))
-				{
-					calorieGraph calorieChart = new calorieGraph(null, "Calorie Summary");
-				    calorieChart.pack();
-				    calorieChart.setVisible(true);
-				}
-				//if blood pressure is selected
-				else if("Blood Pressure".equals(data_graphChoice))
-				{
-				      bloodPressureGraph pressureChart = new bloodPressureGraph(null, "Blood Pressure Summary");
-				      pressureChart.pack();
-				      pressureChart.setVisible(true);
-				}
-				//if exercise is selected
-				else if("Exercise Summary".equals(data_graphChoice))
-				{
-					exerciseGraph workoutChart = new exerciseGraph(null, "Work Out Summary");
-				    workoutChart.pack();
-				    workoutChart.setVisible(true);
-				}
-				//if calories was selected
-				else
-				{
-					sleepGraph sleepChart = new sleepGraph(null, "Sleep Summary");
-				    sleepChart.pack();
-				    sleepChart.setVisible(true);
-				}
-		
-			}
-		});
-
-		//creates button for doctor to submit suggestions
-		btnSubmit_Doctor = new JButton("Submit");
-		btnSubmit_Doctor.setBounds(558, 368, 117, 29);
-		Doctor.getContentPane().add(btnSubmit_Doctor);
-
-		//adds action to the submit button
-		btnSubmit_Doctor.addActionListener(new ActionListener() {
-			//when button is clicked, suggestions are saved for patient to view
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-			//saves doctor's suggestions for specific patient
-			suggestions = txtSuggestions.getText();
-			noteFromDoctor = new JTextArea(suggestions);
-			
-			/** if (suggestions saved properly to user)
-			 * {
-			 * 		//displays success message if account created
-			 * 		JOptionPane.showMessageDialog(createUser, "Suggestions were submitted!","A plain message",
-							JOptionPane.PLAIN_MESSAGE);
-				}
-				else
-				{
-					//displays error message if account was not created
-					JOptionPane.showMessageDialog(createUser, "Error: did not submit","Inane error",
-							JOptionPane.ERROR_MESSAGE);
-				}
-			 */
-			
-			}
-		});				
-		
-		
-		
-		
-
-		
 		
 	}
-}
+	
+	
+	   
+	
+	
+
+	
+	
+	
+
 

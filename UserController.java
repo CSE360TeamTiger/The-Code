@@ -24,15 +24,16 @@ public class UserController {
     	theData = new LinkedList<Object>();
 	    try{
 	    	input = new Scanner(new BufferedReader(new FileReader("\\src\\FT360_Data.txt")));
-	    	fileRead(input);
+	    	fileRead();
 	    }catch(FileNotFoundException e){
 	    	
 	    }	
     }
     
-    public void fileRead(Scanner line){
+    public void fileRead(){
+    	Scanner line = input;
     	String temp = null;
-    	while(line.hasNextLine()){
+    	while((line != null) && (line.hasNextLine())){
     		if(line.hasNext("User")){
 				inputUser.setType(line.next());
 				inputUser.setID(line.nextInt());
@@ -106,7 +107,7 @@ public class UserController {
     		}else if (type.equalsIgnoreCase("patient")){
     			tempStr = ((Patient)listItem).getEmail();
     		}else if (type.equalsIgnoreCase("healthLog")){
-    			tempStr = ((HealthLog)listItem).getDate();
+    			tempStr = Integer.toString(((HealthLog)listItem).getID());
     		}else if (type.equalsIgnoreCase("workout")){
     			tempStr = ((Workout)listItem).getName();
     		}
@@ -128,7 +129,7 @@ public class UserController {
     		}else if (type.equalsIgnoreCase("patient")){
     			tempStr = ((Patient)listItem).getEmail();
     		}else if (type.equalsIgnoreCase("healthLog")){
-    			tempStr = ((HealthLog)listItem).getDate();
+    			tempStr = Integer.toString(((HealthLog)listItem).getID());
     		}else if (type.equalsIgnoreCase("workout")){
     			tempStr = ((Workout)listItem).getName();
     		}
@@ -138,14 +139,15 @@ public class UserController {
     	return null;
     }
     
-    public static double[] graphData(int id, String chartType, String type, String searchFor){
+    public static double[] graphData(int id, String chartType, String type){
     	LinkedList<Object>  searchList = theData;
     	int i = 0;
     	Object listItem;
     	double[] foundData = null;
     	
+    	
     	do{
-    		listItem = search(type, searchFor);
+    		listItem = search(type, Integer.toString(id));
     		if( (((HealthLog)listItem).getID() == id) && (chartType.equalsIgnoreCase("DBP")) ){
     			foundData[i] = ((HealthLog)listItem).getDBP();
     		}else if ( (((HealthLog)listItem).getID() == id) && (chartType.equalsIgnoreCase("SBP")) ){
